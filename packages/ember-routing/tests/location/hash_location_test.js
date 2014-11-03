@@ -90,7 +90,7 @@ test("HashLocation.getURL() returns a normal forward slash when there is no loca
     createLocation({
       _location: mockBrowserLocation('/')
     });
-    
+
     equal(location.getURL(), '/');
 });
 
@@ -183,4 +183,72 @@ test("HashLocation.willDestroy() cleans up hashchange event listener", function(
 
     // clean up
     Ember.$ = oldJquery;
+});
+
+test("getURL returns the empty string when there is no location.hash", function() {
+    expect(1);
+
+    createLocation({
+      _location: mockBrowserLocation('/')
+    });
+
+    equal(location.getURL(), '');
+});
+
+test("getURL returns the empty string when there is only the base path", function() {
+    expect(1);
+
+    createLocation({
+      rootURL: '/dashboard',
+      _location: mockBrowserLocation('/dashboard/#/')
+    });
+
+    equal(location.getURL(), '');
+});
+
+test("getURL returns the same thing for routes with and without trailing slashes", function() {
+    expect(2);
+
+    createLocation({
+      rootURL: '/dashboard',
+      _location: mockBrowserLocation('/dashboard/#/foo/bar/')
+    });
+
+    equal(location.getURL(), '/foo/bar');
+});
+
+test("setURL does not change the url when already at the base path", function() {
+    expect(1);
+
+    createLocation({
+      rootURL: '/dashboard',
+      _location: mockBrowserLocation('/dashboard')
+    });
+
+    location.setURL('/');
+    equal(location.getHash(), '');
+});
+
+test("setURL does not change the url when already at the hash base path", function() {
+    expect(1);
+
+    createLocation({
+      rootURL: '/dashboard',
+      _location: mockBrowserLocation('/dashboard/#/')
+    });
+
+    location.setURL('/');
+    equal(location.getHash(), '/');
+});
+
+test("setURL does not change the url when already at the url", function() {
+    expect(1);
+
+    createLocation({
+      rootURL: '/dashboard',
+      _location: mockBrowserLocation('/dashboard/#/foo/bar/')
+    });
+
+    location.setURL('/foo/bar');
+    equal(location.getHash(), '/foo/bar/');
 });
