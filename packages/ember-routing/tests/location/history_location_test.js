@@ -130,6 +130,124 @@ test("base URL is preserved when moving around", function() {
     equal(FakeHistory.state.path, '/base/one/two');
 });
 
+test("setURL ignores trailing slashes in rootURL", function() {
+    expect(1);
+
+    createLocation({
+      baseURL: '/base/',
+      rootURL: '/root/',
+      location: mockBrowserLocation('/base/root')
+    });
+
+    location.pushState = function (path) {
+      ok(false, 'pushState was called for path: ' + path);
+    };
+
+    location.initState();
+    location.setURL('/');
+
+    equal(FakeHistory.state.path, '/base/root');
+});
+
+test("setURL ignores '/' when already at the rootURL", function() {
+    expect(1);
+
+    createLocation({
+      baseURL: '/base/',
+      rootURL: '/root',
+      location: mockBrowserLocation('/base/root')
+    });
+
+    location.pushState = function (path) {
+      ok(false, 'pushState was called for path: ' + path);
+    };
+
+    location.initState();
+    location.setURL('/');
+
+    equal(FakeHistory.state.path, '/base/root');
+});
+
+test("setURL ignores trailing slashes", function() {
+    expect(1);
+
+    createLocation({
+      baseURL: '/base/',
+      rootURL: '/root',
+      location: mockBrowserLocation('/base/root/')
+    });
+
+    location.initState();
+    location.setURL('/foo/bar/');
+
+    equal(FakeHistory.state.path, '/base/root/foo/bar');
+});
+
+test("getURL ignores trailing slash on rootURL", function() {
+    expect(1);
+
+    createLocation({
+      baseURL: '/base/',
+      rootURL: '/root/',
+      location: mockBrowserLocation('/base/root/')
+    });
+
+    location.initState();
+    equal(location.getURL(), '');
+});
+
+test("getURL returns empty string for rootURL plus a trailing slash", function() {
+    expect(1);
+
+    createLocation({
+      baseURL: '/base/',
+      rootURL: '/root',
+      location: mockBrowserLocation('/base/root/')
+    });
+
+    location.initState();
+    equal(location.getURL(), '');
+});
+
+test("getURL ignores trailing slashes", function() {
+    expect(1);
+
+    createLocation({
+      baseURL: '/base/',
+      rootURL: '/root',
+      location: mockBrowserLocation('/base/root/foo/bar/')
+    });
+
+    location.initState();
+    equal(location.getURL(), '/foo/bar');
+});
+
+test("formatURL ignores trailing slashes", function() {
+    expect(2);
+
+    createLocation({
+      baseURL: '/base/',
+      rootURL: '/root'
+    });
+
+    location.initState();
+    equal(location.formatURL('/'), '/base/root');
+    equal(location.formatURL('/foo/bar/'), '/base/root/foo/bar');
+});
+
+test("formatURL ignores trailing slash in rootURL", function() {
+    expect(2);
+
+    createLocation({
+      baseURL: '/base/',
+      rootURL: '/root/'
+    });
+
+    location.initState();
+    equal(location.formatURL('/'), '/base/root');
+    equal(location.formatURL('/foo/bar/'), '/base/root/foo/bar');
+});
+
 test("setURL continues to set even with a null state (iframes may set this)", function() {
     expect(1);
 
@@ -175,7 +293,7 @@ test("HistoryLocation.getURL() returns the current url, excluding both rootURL a
 test("HistoryLocation.getURL() includes location.search", function() {
     expect(1);
 
-    HistoryTestLocation.reopen({  
+    HistoryTestLocation.reopen({
       init: function() {
         this._super();
         set(this, 'location', mockBrowserLocation('/foo/bar?time=morphin'));
@@ -190,7 +308,7 @@ test("HistoryLocation.getURL() includes location.search", function() {
 test("HistoryLocation.getURL() includes location.hash", function() {
     expect(1);
 
-    HistoryTestLocation.reopen({  
+    HistoryTestLocation.reopen({
       init: function() {
         this._super();
         set(this, 'location', mockBrowserLocation('/foo/bar#pink-power-ranger'));
@@ -205,7 +323,7 @@ test("HistoryLocation.getURL() includes location.hash", function() {
 test("HistoryLocation.getURL() includes location.hash and location.search", function() {
     expect(1);
 
-    HistoryTestLocation.reopen({  
+    HistoryTestLocation.reopen({
       init: function() {
         this._super();
         set(this, 'location', mockBrowserLocation('/foo/bar?time=morphin#pink-power-ranger'));
