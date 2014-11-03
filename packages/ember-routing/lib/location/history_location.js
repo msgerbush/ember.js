@@ -45,9 +45,9 @@ export default EmberObject.extend({
     Will be pre-pended to path upon state change
 
     @property rootURL
-    @default '/'
+    @default ''
   */
-  rootURL: '/',
+  rootURL: '',
 
   /**
     Returns the current `location.pathname` without `rootURL` or `baseURL`
@@ -57,15 +57,11 @@ export default EmberObject.extend({
     @return url {String}
   */
   getURL: function() {
-    var rootURL = get(this, 'rootURL');
     var location = get(this, 'location');
     var path = location.pathname;
-    var baseURL = get(this, 'baseURL');
+    var rootPath = this.formatURL('');
 
-    rootURL = rootURL.replace(/\/$/, '');
-    baseURL = baseURL.replace(/\/$/, '');
-
-    var url = path.replace(baseURL, '').replace(rootURL, '');
+    var url = path.replace(rootPath, '').replace(/\/$/, '');
     var search = location.search || '';
 
     url += search;
@@ -195,15 +191,15 @@ export default EmberObject.extend({
   formatURL: function(url) {
     var rootURL = get(this, 'rootURL');
     var baseURL = get(this, 'baseURL');
+    var strippedPath;
 
-    if (url !== '') {
-      rootURL = rootURL.replace(/\/$/, '');
-      baseURL = baseURL.replace(/\/$/, '');
-    } else if(baseURL.match(/^\//) && rootURL.match(/^\//)) {
-      baseURL = baseURL.replace(/\/$/, '');
-    }
-
-    return baseURL + rootURL + url;
+    return [baseURL, rootURL, url].reduce(function (formattedURL, path) {
+      strippedPath = path.replace(/^\/|\/$/g, '');
+      if(strippedPath.length){
+        return formattedURL += '/' + strippedPath;
+      }
+      return formattedURL;
+    }, '');
   },
 
   /**

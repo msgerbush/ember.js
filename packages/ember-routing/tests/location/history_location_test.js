@@ -133,16 +133,21 @@ test("base URL is preserved when moving around", function() {
 test("setURL ignores trailing slashes in rootURL", function() {
     expect(1);
 
-    createLocation({
-      baseURL: '/base/',
-      rootURL: '/root/',
-      location: mockBrowserLocation('/base/root')
-    });
-
-    location.pushState = function (path) {
+    FakeHistory.pushState = function (path) {
       ok(false, 'pushState was called for path: ' + path);
     };
 
+    HistoryTestLocation.reopen({
+      init: function() {
+        this._super();
+
+        set(this, 'baseURL', '/base/');
+        set(this, 'rootURL', '/root/');
+        set(this, 'location', mockBrowserLocation('/base/root'));
+      }
+    });
+
+    createLocation();
     location.initState();
     location.setURL('/');
 
@@ -152,16 +157,21 @@ test("setURL ignores trailing slashes in rootURL", function() {
 test("setURL ignores '/' when already at the rootURL", function() {
     expect(1);
 
-    createLocation({
-      baseURL: '/base/',
-      rootURL: '/root',
-      location: mockBrowserLocation('/base/root')
-    });
-
-    location.pushState = function (path) {
+    FakeHistory.pushState = function (path) {
       ok(false, 'pushState was called for path: ' + path);
     };
 
+    HistoryTestLocation.reopen({
+      init: function() {
+        this._super();
+
+        set(this, 'baseURL', '/base/');
+        set(this, 'rootURL', '/root/');
+        set(this, 'location', mockBrowserLocation('/base/root'));
+      }
+    });
+
+    createLocation();
     location.initState();
     location.setURL('/');
 
@@ -171,12 +181,17 @@ test("setURL ignores '/' when already at the rootURL", function() {
 test("setURL ignores trailing slashes", function() {
     expect(1);
 
-    createLocation({
-      baseURL: '/base/',
-      rootURL: '/root',
-      location: mockBrowserLocation('/base/root/')
+    HistoryTestLocation.reopen({
+      init: function() {
+        this._super();
+
+        set(this, 'baseURL', '/base/');
+        set(this, 'rootURL', '/root');
+        set(this, 'location', mockBrowserLocation('/base/root'));
+      }
     });
 
+    createLocation();
     location.initState();
     location.setURL('/foo/bar/');
 
@@ -186,12 +201,17 @@ test("setURL ignores trailing slashes", function() {
 test("getURL ignores trailing slash on rootURL", function() {
     expect(1);
 
-    createLocation({
-      baseURL: '/base/',
-      rootURL: '/root/',
-      location: mockBrowserLocation('/base/root/')
+    HistoryTestLocation.reopen({
+      init: function() {
+        this._super();
+
+        set(this, 'baseURL', '/base/');
+        set(this, 'rootURL', '/root/');
+        set(this, 'location', mockBrowserLocation('/base/root/'));
+      }
     });
 
+    createLocation();
     location.initState();
     equal(location.getURL(), '');
 });
@@ -199,12 +219,17 @@ test("getURL ignores trailing slash on rootURL", function() {
 test("getURL returns empty string for rootURL plus a trailing slash", function() {
     expect(1);
 
-    createLocation({
-      baseURL: '/base/',
-      rootURL: '/root',
-      location: mockBrowserLocation('/base/root/')
+    HistoryTestLocation.reopen({
+      init: function() {
+        this._super();
+
+        set(this, 'baseURL', '/base/');
+        set(this, 'rootURL', '/root');
+        set(this, 'location', mockBrowserLocation('/base/root/'));
+      }
     });
 
+    createLocation();
     location.initState();
     equal(location.getURL(), '');
 });
@@ -212,12 +237,17 @@ test("getURL returns empty string for rootURL plus a trailing slash", function()
 test("getURL ignores trailing slashes", function() {
     expect(1);
 
-    createLocation({
-      baseURL: '/base/',
-      rootURL: '/root',
-      location: mockBrowserLocation('/base/root/foo/bar/')
+    HistoryTestLocation.reopen({
+      init: function() {
+        this._super();
+
+        set(this, 'baseURL', '/base/');
+        set(this, 'rootURL', '/root');
+        set(this, 'location', mockBrowserLocation('/base/root/foo/bar/'));
+      }
     });
 
+    createLocation();
     location.initState();
     equal(location.getURL(), '/foo/bar');
 });
@@ -225,12 +255,15 @@ test("getURL ignores trailing slashes", function() {
 test("formatURL ignores trailing slashes", function() {
     expect(2);
 
-    createLocation({
-      baseURL: '/base/',
-      rootURL: '/root'
+    HistoryTestLocation.reopen({
+      init: function() {
+        this._super();
+
+        set(this, 'baseURL', '/base/');
+        set(this, 'rootURL', '/root/');
+      }
     });
 
-    location.initState();
     equal(location.formatURL('/'), '/base/root');
     equal(location.formatURL('/foo/bar/'), '/base/root/foo/bar');
 });
@@ -238,12 +271,15 @@ test("formatURL ignores trailing slashes", function() {
 test("formatURL ignores trailing slash in rootURL", function() {
     expect(2);
 
-    createLocation({
-      baseURL: '/base/',
-      rootURL: '/root/'
+    HistoryTestLocation.reopen({
+      init: function() {
+        this._super();
+
+        set(this, 'baseURL', '/base/');
+        set(this, 'rootURL', '/root/');
+      }
     });
 
-    location.initState();
     equal(location.formatURL('/'), '/base/root');
     equal(location.formatURL('/foo/bar/'), '/base/root/foo/bar');
 });
@@ -279,7 +315,7 @@ test("HistoryLocation.getURL() returns the current url, excluding both rootURL a
       init: function() {
         this._super();
 
-        set(this, 'location', mockBrowserLocation('/base/foo/bar'));
+        set(this, 'location', mockBrowserLocation('/base/app/foo/bar'));
         set(this, 'rootURL', '/app/');
         set(this, 'baseURL', '/base/');
       }
