@@ -79,10 +79,10 @@ export default EmberObject.extend({
   */
   setURL: function(path) {
     var state = this.getState();
-    path = this.formatURL(path);
+    var url = this.formatURL(path);
 
-    if (!state || state.path !== path) {
-      this.pushState(path);
+    if (!state || state.path !== url) {
+      this.pushState(url);
     }
   },
 

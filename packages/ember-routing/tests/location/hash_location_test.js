@@ -101,24 +101,8 @@ test("HashLocation.setURL() correctly sets the url", function() {
 
     location.setURL('/bar');
 
-    equal(get(location, 'location.hash'), '/bar');
+    equal(get(location, 'location.hash'), '#/bar');
     equal(get(location, 'lastSetURL'), '/bar');
-});
-
-test("HashLocation.replaceURL() correctly replaces to the path with a page reload", function() {
-    expect(2);
-
-    createLocation({
-      _location: {
-        replace: function(path) {
-          equal(path, '#/foo');
-        }
-      }
-    });
-
-    location.replaceURL('/foo');
-
-    equal(get(location, 'lastSetURL'), '/foo');
 });
 
 test("HashLocation.onUpdateURL() registers a hashchange callback", function() {
@@ -157,6 +141,14 @@ test("HashLocation.formatURL() prepends a # to the provided string", function() 
     equal(location.formatURL('/foo#bar'), '#/foo#bar');
 });
 
+test("formatURL returns urls with a leading slash and #", function() {
+    expect(1);
+
+    createLocation();
+
+    equal(location.formatURL(''), '#/');
+});
+
 test("HashLocation.willDestroy() cleans up hashchange event listener", function() {
     expect(2);
 
@@ -185,17 +177,7 @@ test("HashLocation.willDestroy() cleans up hashchange event listener", function(
     Ember.$ = oldJquery;
 });
 
-test("getURL returns the empty string when there is no location.hash", function() {
-    expect(1);
-
-    createLocation({
-      _location: mockBrowserLocation('/')
-    });
-
-    equal(location.getURL(), '');
-});
-
-test("getURL returns the empty string when there is only the base path", function() {
+test("getURL returns '/' when there is only the base path", function() {
     expect(1);
 
     createLocation({
@@ -203,11 +185,11 @@ test("getURL returns the empty string when there is only the base path", functio
       _location: mockBrowserLocation('/dashboard/#/')
     });
 
-    equal(location.getURL(), '');
+    equal(location.getURL(), '/');
 });
 
 test("getURL returns the same thing for routes with and without trailing slashes", function() {
-    expect(2);
+    expect(1);
 
     createLocation({
       rootURL: '/dashboard',
@@ -226,7 +208,7 @@ test("setURL does not change the url when already at the base path", function() 
     });
 
     location.setURL('/');
-    equal(location.getHash(), '');
+    equal(get(location, 'location.hash'), '');
 });
 
 test("setURL does not change the url when already at the hash base path", function() {
@@ -238,7 +220,7 @@ test("setURL does not change the url when already at the hash base path", functi
     });
 
     location.setURL('/');
-    equal(location.getHash(), '/');
+    equal(get(location, 'location.hash'), '#/');
 });
 
 test("setURL does not change the url when already at the url", function() {
@@ -250,5 +232,5 @@ test("setURL does not change the url when already at the url", function() {
     });
 
     location.setURL('/foo/bar');
-    equal(location.getHash(), '/foo/bar/');
+    equal(get(location, 'location.hash'), '#/foo/bar/');
 });

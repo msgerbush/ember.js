@@ -50,22 +50,16 @@ export default EmberObject.extend({
     @method getURL
   */
   getURL: function() {
-    var originalPath = this.getHash().substr(1);
-    var outPath = originalPath;
-    
-    if (outPath.charAt(0) !== '/') {
-      outPath = '/';
+    var hash = this.getHash();
+    var path = '/';
 
-      // Only add the # if the path isn't empty.
-      // We do NOT want `/#` since the ampersand
-      // is only included (conventionally) when
-      // the location.hash has a value
-      if (originalPath) {
-        outPath += '#' + originalPath;
-      }
+    if(hash.charAt(1) !== '/'){
+      path += hash;
+    } else {
+      path += hash.substr(1).replace(/^\/|\/$/g, '');
     }
 
-    return outPath;
+    return path;
   },
 
   /**
@@ -78,8 +72,13 @@ export default EmberObject.extend({
     @param path {String}
   */
   setURL: function(path) {
-    get(this, 'location').hash = path;
-    set(this, 'lastSetURL', path);
+    var currentURL = '#' + this.getURL();
+    var url = this.formatURL(path);
+
+    if(currentURL !== url){
+      get(this, 'location').hash = url;
+      set(this, 'lastSetURL', url.substr(1));
+    }
   },
 
   /**
@@ -91,8 +90,13 @@ export default EmberObject.extend({
     @param path {String}
   */
   replaceURL: function(path) {
-    get(this, 'location').replace('#' + path);
-    set(this, 'lastSetURL', path);
+    var currentURL = this.getURL();
+    var url = this.formatURL(path).substr(1);
+
+    if(currentURL !== url){
+      get(this, 'location').replace('#' + url);
+      set(this, 'lastSetURL', url);
+    }
   },
 
   /**
@@ -132,7 +136,7 @@ export default EmberObject.extend({
     @param url {String}
   */
   formatURL: function(url) {
-    return '#' + url;
+    return '#/' + url.replace(/^\/|\/$/g, '');
   },
 
   /**
