@@ -213,10 +213,10 @@ test("getURL ignores trailing slash on rootURL", function() {
 
     createLocation();
     location.initState();
-    equal(location.getURL(), '');
+    equal(location.getURL(), '/');
 });
 
-test("getURL returns empty string for rootURL plus a trailing slash", function() {
+test("getURL returns '/' for rootURL plus a trailing slash", function() {
     expect(1);
 
     HistoryTestLocation.reopen({
@@ -231,7 +231,25 @@ test("getURL returns empty string for rootURL plus a trailing slash", function()
 
     createLocation();
     location.initState();
-    equal(location.getURL(), '');
+    equal(location.getURL(), '/');
+});
+
+test("getURL always returns a leading slash", function() {
+    expect(1);
+
+    HistoryTestLocation.reopen({
+      init: function() {
+        this._super();
+
+        set(this, 'baseURL', '/base/');
+        set(this, 'rootURL', '/root');
+        set(this, 'location', mockBrowserLocation('/base/root'));
+      }
+    });
+
+    createLocation();
+    location.initState();
+    equal(location.getURL(), '/');
 });
 
 test("getURL ignores trailing slashes", function() {

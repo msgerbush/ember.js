@@ -61,7 +61,7 @@ export default EmberObject.extend({
     var path = location.pathname;
     var rootPath = this.formatURL('');
 
-    var url = path.replace(rootPath, '').replace(/\/$/, '');
+    var url = '/' + path.replace(rootPath, '').replace(/^\/|\/$/g, '');
     var search = location.search || '';
 
     url += search;
@@ -191,15 +191,12 @@ export default EmberObject.extend({
   formatURL: function(url) {
     var rootURL = get(this, 'rootURL');
     var baseURL = get(this, 'baseURL');
-    var strippedPath;
 
-    return [baseURL, rootURL, url].reduce(function (formattedURL, path) {
-      strippedPath = path.replace(/^\/|\/$/g, '');
-      if(strippedPath.length){
-        return formattedURL += '/' + strippedPath;
-      }
-      return formattedURL;
-    }, '');
+    return '/' + [baseURL, rootURL, url].map(function (path) {
+      return path.replace(/^\/|\/$/g, '');
+    }).filter(function (path) {
+      return path.length;
+    }).join('/');
   },
 
   /**
